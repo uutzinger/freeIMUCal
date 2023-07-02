@@ -10,7 +10,7 @@ This work is based on Fabio Varesano's [implementation](https://www.researchgate
 - pyqtgraph `sudo apt-get install python3-pyqtgraph`  or `pip install pyqtgraph`
 
 Files needed from this distribution:
-- cal_lib.py which includes ellipsoid_fit to fir ellipsoid to [x,y,z] data
+- cal_lib.py which includes ellipsoid_fit to fit ellipsoid to [x,y,z] data
 - freeimu_cal.ui user interface with 3D graphs
 - freeimu_cal_noGL.ui userinterface for machines were pyqtgraph can not create 3D scatter plot
 
