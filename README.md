@@ -30,7 +30,7 @@ in other terminal
 minicom -D /tmp/ttyV1 -b 115200
 '''
 
-For IMU Calibration use `socat -d -d pty,rawer,echo=0,link=/tmp/ttyV0 pty,rawer,echo=0,link=/tmp/ttyV1&` which creates the ttyV0 for the program reporting IMU data and ttyV1 for freeIMUCal. socat connects the two interfaces via a virtual nullmodem cable meaning sending to ttyV0 will arrive at the ttyV1 receiver and sending to ttyV1 will arrive at tty0 receiver.
+For IMU Calibration use `socat -d -d pty,rawer,echo=0,link=/tmp/ttyV0 pty,rawer,echo=0,link=/tmp/ttyV1&` which creates ttyV0 for the program reporting IMU data and ttyV1 for freeIMUCal to receive data. socat connects the two interfaces via a virtual nullmodem cable meaning sending to ttyV0 will arrive at the ttyV1 receiver and sending to ttyV1 will arrive at tty0 receiver.
 
 - Windows
 [com0com](https://sourceforge.net/projects/com0com/)
