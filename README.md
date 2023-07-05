@@ -15,11 +15,11 @@ Files needed from this distribution:
 - freeimu_cal_noGL.ui userinterface for machines were pyqtgraph can not create 3D scatter plot
 
 ## Installing Virtual Serial Port
-You can connect to your IMU by creating 2 virtual serial port, where the IMU driver sends data to and the calibration program is picking it up
+You can connect to your IMU by creating 2 virtual serial port, where the IMU driver sends data to and the calibration program is picking it up from
 
 - Linux
 
-See explanation of the different drivers https://www.baeldung.com/linux/make-virtual-serial-port
+See explanation of the different virtual serial drivers https://www.baeldung.com/linux/make-virtual-serial-port
 
 ```
 sudo apt-get install -y socat
