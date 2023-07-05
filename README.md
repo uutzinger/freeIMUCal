@@ -21,16 +21,20 @@ You can connect to your IMU by creating 2 virtual serial port, where the IMU dri
 
 See explanation of the different drivers https://www.baeldung.com/linux/make-virtual-serial-port
 
-'''
+```
 sudo apt-get install -y socat
 socat -d -d pty,rawer,echo=0,link=/tmp/ttyV0 pty,rawer,echo=0,link=/tmp/ttyV1
 in one terminal
 minicom -D /tmp/ttyV0 -b 115200
 in other terminal
 minicom -D /tmp/ttyV1 -b 115200
-'''
+```
 
 For IMU Calibration use `socat -d -d pty,rawer,echo=0,link=/tmp/ttyV0 pty,rawer,echo=0,link=/tmp/ttyV1&` which creates ttyV0 for the program reporting IMU data and ttyV1 for freeIMUCal to receive data. socat connects the two interfaces via a virtual nullmodem cable meaning sending to ttyV0 will arrive at the ttyV1 receiver and sending to ttyV1 will arrive at tty0 receiver.
 
 - Windows
 [com0com](https://sourceforge.net/projects/com0com/)
+
+## Usage
+I use this program to record data.
+I use the main section in ```cal_lib.py``` to create the Correction JSON files.
