@@ -451,9 +451,8 @@ class FreeIMUCal(QMainWindow):
     
     # Setup graphs 3D
 
-    # if USE3DPLOT is True:
-    if True:
-
+    if USE3DPLOT is True:
+    
         # ACC 3D
         
         ag = gl.GLGridItem(antialias=True, glOptions='opaque')
