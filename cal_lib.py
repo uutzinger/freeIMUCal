@@ -1,8 +1,12 @@
 """
 cal_lib.py - Ellipsoid into Sphere calibration library based upon numpy and linalg
-Copyright (C) 2012 Fabio Varesano <fabio at varesano dot net>
 
-Updates by Urs Utzinger to include ellipsoid fit from Yury Petrov <yurypetrov at gmail dot com>
+Copyright (C) 2023 Urs Utzinger 
+
+Included ellipsoid fit from Yury Petrov <yurypetrov at gmail dot com> which allows different approaches to fit the ellipsoid.
+Added example calibration in main section
+
+Copyright (C) 2012 Fabio Varesano <fabio at varesano dot net>
 
 Development of this code has been supported by the Department of Computer Science,
 Universita' degli Studi di Torino, Italy within the Piemonte Project
@@ -526,4 +530,4 @@ if __name__ == "__main__":
 
     ##################################
 
-    # input("Press Enter to continue...")
+    input("Press Enter to continue...")
