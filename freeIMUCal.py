@@ -195,7 +195,7 @@ class serialWorker(QThread):
   
   def __del__(self):
     self.exiting = True
-    self.wait()
+    # self.wait()
 
 ######################################################################
 # ZMQ Worker
@@ -299,7 +299,7 @@ class zmqWorker(QThread):
   
   def __del__(self):
     self.exiting = True
-    self.wait()
+    # self.wait()
 
 class dict2obj:
     def __init__(self, data):
