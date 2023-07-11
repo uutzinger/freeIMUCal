@@ -455,7 +455,7 @@ if __name__ == "__main__":
     radii_Corr = radii @ correctionMat
     print(radii_Corr)
 
-    data_Corr = computeCalibratedData(data, offset_Corr, correctionMat)
+    data_Corr = computeCalibratedData(data, offset, correctionMat)
 
     error=target_norm-(np.linalg.norm(data_Corr, axis=1))
 

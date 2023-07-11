@@ -262,21 +262,25 @@ class zmqWorker(QThread):
               if hasattr(data_imu, 'acc') and hasattr(data_imu, 'gyr') and hasattr(data_imu, 'mag'): 
                 # store readings in files
                 if self.acc_file != None: 
-                  acc_readings_line = '{:f} {:f} {:f}\n'.format(data_imu.acc.x, data_imu.acc.y, data_imu.acc.z)
-                  self.acc_file.write(acc_readings_line)
+                  if type(acc.x) == float and type(acc.y) == float and type(acc.z) == float:
+                    acc_readings_line = '{:f} {:f} {:f}\n'.format(data_imu.acc.x, data_imu.acc.y, data_imu.acc.z)
+                    self.acc_file.write(acc_readings_line)
                 if self.gyr_file != None: 
-                  gyr_readings_line = '{:f} {:f} {:f}\n'.format(data_imu.gyr.x, data_imu.gyr.y, data_imu.gyr.z)
-                  self.gyr_file.write(gyr_readings_line)
+                  if type(gyr.x) == float and type(gyr.y) == float and type(gyr.z) == float:
+                    gyr_readings_line = '{:f} {:f} {:f}\n'.format(data_imu.gyr.x, data_imu.gyr.y, data_imu.gyr.z)
+                    self.gyr_file.write(gyr_readings_line)
                 if self.mag_file != None: 
-                  mag_readings_line = '{:f} {:f} {:f}\n'.format(data_imu.mag.x, data_imu.mag.x, data_imu.mag.z)
-                  self.mag_file.write(mag_readings_line)
+                  if type(mag.x) == float and type(mag.y) == float and type(mag.z) == float:
+                    mag_readings_line = '{:f} {:f} {:f}\n'.format(data_imu.mag.x, data_imu.mag.y, data_imu.mag.z)
+                    self.mag_file.write(mag_readings_line)
                 j += 1 # we have a new reading, increment reading counter
       # end while j < count
-      # send last reading to display
+      # send last reading to display, if data was corrupted j would not have increased
+      # so we dont need to check integrity again before emitting data
       if not self.paused:
         self.newData.emit([data_imu.acc.x, data_imu.acc.y, data_imu.acc.z,
-                           data_imu.gyr.x, data_imu.gyr.y, data_imu.gyr.z,
-                           data_imu.mag.x, data_imu.mag.y, data_imu.mag.z])          
+                          data_imu.gyr.x, data_imu.gyr.y, data_imu.gyr.z,
+                          data_imu.mag.x, data_imu.mag.y, data_imu.mag.z])          
 
         if self.acc_file != None: self.acc_file.flush()
         if self.gyr_file != None: self.gyr_file.flush()
