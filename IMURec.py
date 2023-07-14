@@ -302,6 +302,10 @@ class MainWindow(QMainWindow):
             self.acc3D_sp.setGLOptions('translucent')
             self.ui.acc3D.addItem(self.acc3D_sp)
 
+            self.acc3Dline_sp = gl.GLLinePlotItem()
+            self.acc3Dline_sp.setGLOptions('translucent')
+            self.ui.acc3D.addItem(self.acc3Dline_sp)
+
             self.ui.acc3D.opts['center'] = QVector3D(0, 0, 0) 
             self.ui.acc3D.opts['bgcolor'] = (255, 255, 255, 255)  # Set background color to white
             self.ui.acc3D.opts['distance'] = 1.*acc_range
@@ -340,6 +344,10 @@ class MainWindow(QMainWindow):
             self.gyr3D_sp = gl.GLScatterPlotItem()
             self.gyr3D_sp.setGLOptions('translucent')
             self.ui.gyr3D.addItem(self.gyr3D_sp)
+
+            self.gyr3Dline_sp = gl.GLLinePlotItem()
+            self.gyr3Dline_sp.setGLOptions('translucent')
+            self.ui.gyr3D.addItem(self.gyr3Dline_sp)
 
             self.ui.gyr3D.opts['center'] = QVector3D(0, 0, 0) 
             self.ui.gyr3D.opts['distance'] = 1.2*gyr_range
@@ -381,6 +389,10 @@ class MainWindow(QMainWindow):
             self.mag3D_sp = gl.GLScatterPlotItem()
             self.mag3D_sp.setGLOptions('translucent')
             self.ui.mag3D.addItem(self.mag3D_sp)
+
+            self.mag3Dline_sp = gl.GLLinePlotItem()
+            self.mag3Dline_sp.setGLOptions('translucent')
+            self.ui.mag3D.addItem(self.mag3Dline_sp)
     
             self.ui.mag3D.opts['center'] = QVector3D(0, 0, 0) 
             self.ui.mag3D.opts['distance'] = 1.5*mag_range
@@ -549,7 +561,9 @@ class MainWindow(QMainWindow):
             size = 10.
             
             if self.ui.accDisplay.isChecked():
-                self.acc3D_sp.setData(pos=self.acc_data[1:-1,:], color = color, size=size)
+                n = self.acc_data.shape[0]
+                self.acc3D_sp.setData(pos=self.acc_data[1:n,:], color = color, size=size)
+                self.acc3Dline_sp.setData(pos=self.acc_data[1:n,:], width=3.0, color=(0.5, 0.5, 0.5, 0.5))
                 # Calculate the data range
                 if len(self.acc_data) > 2:
                     acc_data_range = np.linalg.norm(acc_data_max - acc_data_min)
@@ -560,7 +574,10 @@ class MainWindow(QMainWindow):
                 self.ui.acc3D.update()
                     
             if self.ui.gyrDisplay.isChecked():
-                self.gyr3D_sp.setData(pos=self.gyr_data[1:-1,:], color = color, size=size)
+                n = self.gyr_data.shape[0]
+                self.gyr3D_sp.setData(pos=self.gyr_data[1:n,:], color = color, size=size)
+                self.gyr3Dline_sp.setData(pos=self.gyr_data[1:n,:], width=3.0, color=(0.5, 0.5, 0.5, 0.5))
+                # Calculate the data range
                 if len(self.gyr_data) > 2:
                     gyr_data_range = np.linalg.norm(gyr_data_max - gyr_data_min)
                     gyr_camera_distance = gyr_data_range
@@ -570,7 +587,9 @@ class MainWindow(QMainWindow):
                 self.ui.gyr3D.update()
                 
             if self.ui.magDisplay.isChecked():
-                self.mag3D_sp.setData(pos=self.mag_data[1:-1,:], color = color, size=size)
+                n = self.mag_data.shape[0]
+                self.mag3D_sp.setData(pos=self.mag_data[1:n,:], color = color, size=size)
+                self.mag3Dline_sp.setData(pos=self.mag_data[1:n,:], width=3.0, color=(0.5, 0.5, 0.5, 0.5))
                 if len(self.mag_data) > 2:
                     mag_data_range = np.linalg.norm(mag_data_max - mag_data_min)
                     mag_camera_distance = mag_data_range
