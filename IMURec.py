@@ -607,6 +607,7 @@ class MainWindow(QMainWindow):
             self.accZX_sp.setData(x=self.acc_data[1:-1,2], y=self.acc_data[1:-1,0])
             if USE3DPLOT == True:
                 self.acc3D_sp.setData(pos=self.acc_data, color = (1, 1, 1, 1), size=2)
+                self.acc3Dline_sp.setData(pos=self.acc_data, color = (1, 1, 1, 1), width=3.0)
         
         if self.ui.gyrDisplay.isChecked():
             self.gyr_data = np.zeros([1,3])
@@ -615,6 +616,7 @@ class MainWindow(QMainWindow):
             self.gyrZX_sp.setData(x=self.gyr_data[1:-1,2], y=self.gyr_data[1:-1,0])
             if USE3DPLOT == True:
                 self.gyr3D_sp.setData(pos=self.gyr_data, color = (1, 1, 1, 1), size=2)
+                self.gyr3Dline_sp.setData(pos=self.gyr_data, color = (1, 1, 1, 1), width=3.0)
         
         if self.ui.magDisplay.isChecked():
             self.mag_data = np.zeros([1,3])
@@ -623,6 +625,7 @@ class MainWindow(QMainWindow):
             self.magZX_sp.setData(x=self.mag_data[1:-1,2], y=self.mag_data[1:-1,0])
             if USE3DPLOT == True:
                 self.mag3D_sp.setData(pos=self.mag_data, color = (1, 1, 1, 1), size=2)
+                self.mag3Dline_sp.setData(pos=self.mag_data, color = (1, 1, 1, 1), width=3.0)
     
 ######################################################################
 # Main Application
