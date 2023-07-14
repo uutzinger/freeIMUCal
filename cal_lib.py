@@ -92,7 +92,7 @@ def readfromFile(file_name):
     return np.array([samples_x, samples_y, samples_z]).T
 
 def cleanupData(data, norm_min, norm_max):
-    # Remove Data outside the acceptable range
+    # Remove data outside the min and max range
     data_norm = np.linalg.norm(data,axis=1) 
     accept = np.logical_and((data_norm>=norm_min), (data_norm<norm_max))
     return data[accept,:]
@@ -146,6 +146,7 @@ def readCalibration(filename, center, correctionMat):
     return center, correctionMat
     
 def computeCalibratedData(data, offsets, correctionMat):
+    '''applies offset and correction matrix to data'''
     #
     output = None
 
@@ -167,6 +168,7 @@ def computeCalibratedData(data, offsets, correctionMat):
     return output
 
 def ellipsoid(center,radii):
+    '''creates and ellopsoid from center and radii to plot on 3d plot'''
     u = np.linspace(0,2*np.pi, 100)
     v = np.linspace(0,np.pi, 100)
     x = center[0] + radii[0]*np.outer(np.cos(u), np.sin(v))

@@ -8,7 +8,7 @@ from cal_lib import *
 print("Calibrating Magnetometer")
 
 # Default values are for Tucson, Arizona, USA
-target_norm = 47.3923    # microT
+target_norm = 33.07893064435485     # microT
 
 data = readfromFile('magtest.txt')
 n = np.linalg.norm(data, axis=1)
