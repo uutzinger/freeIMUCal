@@ -27,8 +27,10 @@ Files needed from this distribution:
 - cal_lib.py which includes ellipsoid_fit to fit ellipsoid to [x,y,z] data
 - imu_recorder.ui user interface with 3D graphs
 
+You will need an IMU board and program that reads its data and transfers it either to a serial port or via ZMQ. You can see example for Samsung gearVR controller in the author's [gearVRC](https://github.com/uutzinger/gearVRC) repository.
+
 ## Installing Virtual Serial Port
-You can connect to your IMU by creating 2 virtual serial port, where the IMU driver sends data to and the calibration program is picking it up from
+You can connect to your IMU by creating 2 virtual serial port, where the IMU driver sends data to and the calibration program is picking it up from. I will add this code to the display program soon. 
 
 - Linux
 
