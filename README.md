@@ -12,6 +12,9 @@ $$M_c = [[s_x,m_{01}, m_{02}],[m_{10}, s_y, m_{12}],[m_{20},m_{21},s_z]] $$
 
 Often $m_{01}..m_{21}$ are $0.0$ and $s_x,s_y,s_z$ (scales) are close to $1.0$
 
+
+![image info](./pictures/IMURecorder.png)
+
 ## Background
 This work is based on Fabio Varesano's [implementation](https://www.researchgate.net/publication/258817923_FreeIMU_An_Open_Hardware_Framework_for_Orientation_and_Motion_Sensing) of [FreeIMU](https://github.com/Fabio-Varesano-Association/freeimu)
 
