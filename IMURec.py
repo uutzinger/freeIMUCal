@@ -36,6 +36,8 @@ USE3DPLOT = True
 DATADISPLAYINTERVAL = 25 # number of readings to receive before displaying one data point
 # SERIAL
 BAUDRATE = 115200
+# ZMQ
+ZMQTIMEOUT = 1000 # in milliseconds
 
 acc_range = 15   # Initial Display Range is around 1.5g
 mag_range = 100  # Initial Display Range is around 100uT
@@ -65,6 +67,7 @@ class dict2obj:
 class zmqWorker(QObject):
 
     dataReady = pyqtSignal(list)
+    finished  = pyqtSignal()
 
     def __init__(self, parent=None):
         super(zmqWorker, self).__init__(parent)
@@ -82,8 +85,8 @@ class zmqWorker(QObject):
         self.gyr_append = False
         self.mag_record = False
         self.mag_append = False
-        
-        self.count = DATADISPLAYINTERVAL
+                
+        self.timeout_counter = 0
     
     def start(self):
         self.running = True
@@ -93,7 +96,10 @@ class zmqWorker(QObject):
         socket = context.socket(zmq.SUB)
         socket.setsockopt(zmq.SUBSCRIBE, b"imu") # subscribe to "imu" topic
         socket.connect(self.zmqPort)
-
+        
+        poller = zmq.Poller()
+        poller.register(socket, zmq.POLLIN)
+        
         if self.acc_record:
             if self.acc_append: self.acc_file = open(self.acc_file_name, 'a')
             else:               self.acc_file = open(self.acc_file_name, 'w')
@@ -109,39 +115,49 @@ class zmqWorker(QObject):
             else:               self.mag_file = open(self.mag_file_name, 'w')
         else:                   self.mag_file = None
         
-        counter = 0
+        counter = 0              # for transferring data to GUI for plotting after DATADISPLAYINTERVAL readings
+        self.timeout_counter = 0 # for detecting if ZMQ has connection to server
+        
         while self.running:
-            response = socket.recv_multipart()
-            if len(response) == 2:
-                [topic, msg_packed] = response
-                if topic == b"imu":
-                    if not self.paused: 
-                        msg_dict = msgpack.unpackb(msg_packed)
-                        data_imu = dict2obj(msg_dict)
-                        if hasattr(data_imu, 'acc') and hasattr(data_imu, 'gyr') and hasattr(data_imu, 'mag'): 
-                            # the recorded file appears to have NULL characters in it, hope this helps
-                            # if (type(data_imu.acc.x) == float and type(data_imu.acc.y) == float and type(data_imu.acc.z) == float) and \
-                            #    (type(data_imu.gyr.x) == float and type(data_imu.gyr.y) == float and type(data_imu.gyr.z) == float) and \
-                            #    (type(data_imu.mag.x) == float and type(data_imu.mag.y) == float and type(data_imu.mag.z) == float):
-                                if self.acc_record:
-                                    acc_readings_line = '{:f} {:f} {:f}\n'.format(data_imu.acc.x, data_imu.acc.y, data_imu.acc.z)
-                                    self.acc_file.write(acc_readings_line)
-                                if self.gyr_record: 
-                                    gyr_readings_line = '{:f} {:f} {:f}\n'.format(data_imu.gyr.x, data_imu.gyr.y, data_imu.gyr.z)
-                                    self.gyr_file.write(gyr_readings_line)
-                                if self.mag_record:
-                                    mag_readings_line = '{:f} {:f} {:f}\n'.format(data_imu.mag.x, data_imu.mag.y, data_imu.mag.z)
-                                    self.mag_file.write(mag_readings_line)
-                                if counter % 20 == 0:
-                                    self.dataReady.emit([data_imu.acc.x, data_imu.acc.y, data_imu.acc.z, 
-                                                        data_imu.gyr.x, data_imu.gyr.y, data_imu.gyr.z, 
-                                                        data_imu.mag.x, data_imu.mag.y, data_imu.mag.z])
-                                    # flush files every once in a while
-                                    if self.acc_record: self.acc_file.flush()
-                                    if self.gyr_record: self.gyr_file.flush()
-                                    if self.mag_record: self.mag_file.flush()  
-                                counter += 1
-
+            
+            events = dict(poller.poll(timeout = ZMQTIMEOUT))
+            if socket in events and events[socket] == zmq.POLLIN:
+                self.timeout_counter = 0
+                response = socket.recv_multipart()
+                if len(response) == 2:
+                    [topic, msg_packed] = response
+                    if topic == b"imu":
+                        if not self.paused: 
+                            msg_dict = msgpack.unpackb(msg_packed)
+                            data_imu = dict2obj(msg_dict)
+                            if hasattr(data_imu, 'acc') and hasattr(data_imu, 'gyr') and hasattr(data_imu, 'mag'): 
+                                # the recorded file appears to have NULL characters in it, hope this helps
+                                # if (type(data_imu.acc.x) == float and type(data_imu.acc.y) == float and type(data_imu.acc.z) == float) and \
+                                #    (type(data_imu.gyr.x) == float and type(data_imu.gyr.y) == float and type(data_imu.gyr.z) == float) and \
+                                #    (type(data_imu.mag.x) == float and type(data_imu.mag.y) == float and type(data_imu.mag.z) == float):
+                                    if self.acc_record:
+                                        acc_readings_line = '{:f} {:f} {:f}\n'.format(data_imu.acc.x, data_imu.acc.y, data_imu.acc.z)
+                                        self.acc_file.write(acc_readings_line)
+                                    if self.gyr_record: 
+                                        gyr_readings_line = '{:f} {:f} {:f}\n'.format(data_imu.gyr.x, data_imu.gyr.y, data_imu.gyr.z)
+                                        self.gyr_file.write(gyr_readings_line)
+                                    if self.mag_record:
+                                        mag_readings_line = '{:f} {:f} {:f}\n'.format(data_imu.mag.x, data_imu.mag.y, data_imu.mag.z)
+                                        self.mag_file.write(mag_readings_line)
+                                    if counter % DATADISPLAYINTERVAL == 0:
+                                        self.dataReady.emit([data_imu.acc.x, data_imu.acc.y, data_imu.acc.z, 
+                                                            data_imu.gyr.x, data_imu.gyr.y, data_imu.gyr.z, 
+                                                            data_imu.mag.x, data_imu.mag.y, data_imu.mag.z])
+                                        # flush files every once in a while
+                                        if self.acc_record: self.acc_file.flush()
+                                        if self.gyr_record: self.gyr_file.flush()
+                                        if self.mag_record: self.mag_file.flush()  
+                                    counter += 1
+            else: # ZMQ TIMEOUT
+                self.timeout_counter += 1
+                if self.timeout_counter > 10:
+                    break
+                                    
         # closing acc,gyr and mag files
         if self.acc_record: 
             self.acc_file.flush()
@@ -152,13 +168,18 @@ class zmqWorker(QObject):
         if self.mag_record: 
             self.mag_file.flush()
             self.mag_file.close() 
+            
+        socket.close()
+        context.term()
+        self.finished.emit()
         
     def stop(self):
-        self.running = False
-        self.paused = False
-        self.acc_file_name = None
-        self.gyr_file_name = None
-        self.mag_file_name = None
+        self.running         = False
+        self.paused          = False
+        self.acc_file_name   = None
+        self.gyr_file_name   = None
+        self.mag_file_name   = None
+        self.timeout_counter = 0
         
     def set_save_file(self, acc_file_name, gyr_file_name, mag_file_name):
         self.acc_file_name = acc_file_name
@@ -414,9 +435,9 @@ class MainWindow(QMainWindow):
   
     def start_worker(self):
         if not self.zmqWorker or not self.zmqWorker.running:
+
             port = self.PortEdit.text()
             self.settings.setValue('recgui/PortEdit', port)
-                        
             if not port:
                 return
             
@@ -464,7 +485,9 @@ class MainWindow(QMainWindow):
             self.zmqWorkerThread = QThread()
             self.zmqWorker.moveToThread(self.zmqWorkerThread)
             self.zmqWorker.dataReady.connect(self.handle_new_data)
+            self.zmqWorker.finished.connect(self.worker_finished)
             self.zmqWorkerThread.started.connect(self.zmqWorker.start)
+            self.zmqWorkerThread.finished.connect(self.worker_thread_finished)
             
             self.zmqWorker.set_save_file(acc_file_name, gyr_file_name, mag_file_name)
             self.zmqWorker.set_save_options(acc_record, acc_append, gyr_record, gyr_append, mag_record, mag_append)
@@ -488,7 +511,10 @@ class MainWindow(QMainWindow):
     def stop_worker(self):
         self.zmqWorker.stop()
         self.zmqWorkerThread.quit()
-        self.zmqWorkerThread.wait()
+        # self.zmqWorkerThread.wait()
+        self.worker_finished()
+        
+    def worker_finished(self):
         self.ui.samplingToggleButton.setText('Start')
         self.ui.samplingToggleButton.setEnabled(True)
         self.ui.samplingStopButton.setEnabled(False)
@@ -504,6 +530,13 @@ class MainWindow(QMainWindow):
         self.ui.gyrAppend.setEnabled(True)
         self.ui.magAppend.setEnabled(True)
         self.ui.clearButton.setEnabled(True)
+        
+    def worker_thread_finished(self):
+        self.zmqWorkerThread.quit()
+        self.zmqWorkerThread.wait()
+        self.zmqWorkerThread.deleteLater()
+        self.zmqWorker.deleteLater()
+        self.zmqWorker = None
 
     ###################################################################
     # Plot New Data, Clear Plot

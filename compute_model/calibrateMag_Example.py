@@ -4,11 +4,20 @@
 
 import matplotlib.pyplot as plt
 from cal_lib import *
+import datetime
+import ahrs
+
+latitude         = 32.253460   # decimal degrees
+longitude        = -110.911789 # decimal degrees
+altitude         = 730         # meter
+
+wmm = ahrs.utils.WMM()
+wmm.magnetic_field(latitude = latitude, longitude=longitude , height=altitude, date=datetime.date(2023, 7, 14))   
+target_norm = wmm.F / 1000.00
+
 
 print("Calibrating Magnetometer")
 
-# Default values are for Tucson, Arizona, USA
-target_norm = 33.07893064435485     # microT
 
 data = readfromFile('mag_data.txt')
 n = np.linalg.norm(data, axis=1)
@@ -30,12 +39,12 @@ plt.show()
 # input("Press Enter to continue...")
 
 data = cleanupData(data,0,500)
-data = removeOutlayers(data)
-data = removeOutlayers(data)
-data = removeOutlayers(data)
+data = removeOutliers(data)
+data = removeOutliers(data)
+data = removeOutliers(data)
 n = np.linalg.norm(data, axis=1)
 fig = plt.figure()
-fig.suptitle("Readings inside max min range")
+fig.suptitle("Readings inside max min range and 3*std")
 ax = fig.add_subplot()
 ax.plot(n[0:-1:10], marker='o')
 plt.show()

@@ -48,12 +48,14 @@ For IMU Calibration use `socat -d -d pty,rawer,echo=0,link=/tmp/ttyV0 pty,rawer,
 ## Usage
 I use ```IMURec.py``` program to record data.
 
-Then use ```calibrateAcc_example.py``` to create the correction JSON files. Change the filename for Gyr and Mag to calibrate the other sensors.
+Then copy your data in the the ```compute_model``` folder.
+
+Modify and use ```calibrateAcc_example.py``` to create the correction JSON files. Change the filename for Gyr and Mag to calibrate the gyroscope and magnetomter.
 
 There are up to three sensors to calibrate:
 - `Magnetometer`
 
-The magnetometer needs to be calibrated in a magnet and motor free environment (remove your smartwatch). You should obtain a good distribution of numbers on all locations along the sphere. Usually there is a significant offset.
+The magnetometer needs to be calibrated in a magnet and motor free environment (remove your smartwatch, keep electric motors away, stay away from elevator). You should obtain a good distribution of numbers on all locations along the sphere. Usually there is a significant offset.
 
 - `Gyroscope`
 
@@ -64,6 +66,9 @@ For the gyroscope you need a turn table used to play vinyl records. It has a set
 You will need to gently waggle the sensor. You will want to cover as many sections of the spherical surface as possible by systematically rotating the sensor. You can record the accelerometer and magnetometer simultaneously. You should not record gyroscope readings during these readings.
 
 ### Results
-The calibration fits should produce an offset as well as scaling in all three directions. You can enable fit option to compute cross axis sensitivity. Its unlikely that the cross axis sensitivity is significant compared to orientation shifts between the three sensors. In some IMU boards there are separate integrated circuits for magnetic field measurements. The scales are the diagonal elements of the correction matrix.
+The calibration fits should produce an offset as well as scaling in all three directions. You can enable fit option to compute cross axis sensitivity. Its unlikely that the cross axis sensitivity is significant compared to orientation shifts between the three sensors, which are difficult to measure. The scales are the diagonal elements of the correction matrix.
+At this time I was unable to record a dataset that gave reasonable cross axis sensitivity numbers.
 
 You can use [pypi AHRS](https://pypi.org/project/AHRS/) World Magnetic Model and World Geodetic System to compute absolute value of gravity and magnetic field at your location and adjust the scaling accordingly.
+
+Using the WMM you can figure out the angle between the accelerometer and the magnetometer and correct for misalignment due to solder or assembly errors. Your accelerometer and gyroscope values would need to be measured as pairs. After above correcting, you can calculate the cross product between the gravity and magnetic field and the average would need to match the cross product of the WMM computed vector with gravity. 
