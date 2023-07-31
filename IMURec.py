@@ -156,7 +156,10 @@ class zmqWorker(QObject):
             else: # ZMQ TIMEOUT
                 self.timeout_counter += 1
                 if self.timeout_counter > 10:
-                    break
+                    socket.close()
+                    socket = context.socket(zmq.SUB)
+                    socket.connect(self.zmqPort)
+                    socket.setsockopt(zmq.SUBSCRIBE, b"imu") # subscribe to "imu" topic
                                     
         # closing acc,gyr and mag files
         if self.acc_record: 

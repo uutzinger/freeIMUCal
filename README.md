@@ -76,4 +76,4 @@ At this time I was unable to record a dataset that gave reasonable cross axis se
 
 You can use [pypi AHRS](https://pypi.org/project/AHRS/) World Magnetic Model and World Geodetic System to compute absolute value of gravity and magnetic field at your location and adjust the scaling accordingly.
 
-Using the WMM you can figure out the angle between the accelerometer and the magnetometer and correct for misalignment due to solder or assembly errors. Your accelerometer and gyroscope values would need to be measured as pairs. After above correcting, you can calculate the cross product between the gravity and magnetic field and the average would need to match the cross product of the WMM computed vector with gravity. 
+Using the WMM you can figure out the angle between the accelerometer and the magnetometer and correct for misalignment due to solder or assembly errors. Your accelerometer and magnetometer values would need to be measured as pairs. After above correcting, you can calculate the cross product between the gravity and magnetic field and the average would need to match the cross product of the WMM computed magnetic field vector with gravity.
